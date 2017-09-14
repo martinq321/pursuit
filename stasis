@@ -1,0 +1,77 @@
+Clear[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, \
+v, w, x, y, z, A, B, F, G, H, J, L, M, P, Q, R, S, T, U, V, W, X, Y, \
+Z, \[Alpha], \[Beta], \[Gamma], \[Delta], \[CurlyEpsilon], \[Zeta], \
+\[Eta], \[Theta], \[Iota], \[Kappa], \[Lambda], \[Chi], \[Nu], \[Xi], \
+\[Omicron], \[Rho], \[Sigma], \[Tau], \[Upsilon], \[CurlyPhi], \
+\[Chi], \[Psi], \[Omega], \[CapitalAlpha], \[CapitalBeta], \
+\[CapitalGamma], \[CapitalDelta], \[CapitalEpsilon], \[CapitalZeta], \
+\[CapitalEta], \[CapitalTheta], \[CapitalIota], \[CapitalKappa], \
+\[CapitalLambda], \[CapitalMu], \[CapitalNu], \[CapitalXi], \
+\[CapitalOmicron], \[CapitalPi], \[CapitalRho], \[CapitalSigma], \
+\[CapitalTau], \[CapitalUpsilon], \[CapitalPhi], \[CapitalChi], \
+\[CapitalPsi], \[CapitalOmega], midpt, newpt, scale, plots, li, abs]
+
+midpt[pc_, pd_] := (Tr /@ Thread@{pc, pd})/2;
+newpt[pa_, pc_, pd_] := Module[{pb, pnew, xnew, ynew, pab},
+   pb = midpt[pc, pd];
+   pab = {pb[[1]] - pa[[1]], pb[[2]] - pa[[2]]};
+   xnew = 
+    If[pab[[1]] == 0, pa[[1]], 
+     Sign[pab[[1]]] 1/
+        Sqrt[1 + (pa[[2]] - pb[[2]])^2/(pa[[1]] - pb[[1]])^2] + 
+      pa[[1]]];
+   ynew = 
+    If[pab[[1]] == 0, pa[[2]] + Sign[pab[[2]]] 1, 
+     pa[[2]] + (xnew - pa[[1]]) #[[2]]/#[[1]] &@pab];
+   pnew = 
+    If[EuclideanDistance[pa, pb] < 
+      EuclideanDistance[pa, {xnew, ynew}], pb, {xnew, ynew}]];
+abs[li_] := Module[{a, b, c, d, e, f, g},
+   a = {Min@#, Max@#} &@li[[All, 1]];
+   b = {Min@#, Max@#} &@li[[All, 2]];
+   c = Abs[Differences@a];
+   d = Abs[Differences@b];
+   e = Max@{c, d}/2; f = 1.5; g = f*e;
+   {{# - g, # + g} &@Mean@a, {# - g, # + g} &@Mean@b}];
+
+\[Zeta] = 26; scale = \[Zeta];
+li = {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, 
+    v, w, x, y, z} = 
+   scale*N@RandomSample[CirclePoints[\[Zeta]], \[Zeta]];
+
+plots = Flatten[{Graphics[{PointSize[.02],
+      Point /@ li
+      }, Frame -> True],
+    
+    ({\[Alpha], \[Beta], \[CapitalAlpha], \[CapitalBeta], \
+\[CapitalGamma], \[CapitalDelta], \[CapitalEpsilon], \[CapitalZeta], \
+\[CapitalEta], \[CapitalTheta], \[CapitalIota], \[CapitalKappa], \
+\[CapitalLambda], \[CapitalMu], \[CapitalNu], \[CapitalXi], \
+\[CapitalOmicron], \[CapitalPi], \[CapitalRho], \[CapitalSigma], \
+\[CapitalTau], \[CapitalUpsilon], \[CapitalPhi], \[CapitalChi], \
+\[CapitalPsi], \[CapitalOmega]} = 
+        Chop /@ N /@ 
+          Quiet[Module[{li}, 
+            li = {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, 
+              r, s, t, u, v, w, x, y, z}; 
+            newpt[#[[1]], #[[2]], #[[3]]] & /@ (Flatten[{{li[[#]]}, 
+                  RandomChoice[Complement[li, {li[[#]]}], 2]}, 1] & /@
+                Range@26)]];
+       li = {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, 
+          t, u, v, w, x, y, 
+          z} = {\[Alpha], \[Beta], \[CapitalAlpha], \[CapitalBeta], \
+\[CapitalGamma], \[CapitalDelta], \[CapitalEpsilon], \[CapitalZeta], \
+\[CapitalEta], \[CapitalTheta], \[CapitalIota], \[CapitalKappa], \
+\[CapitalLambda], \[CapitalMu], \[CapitalNu], \[CapitalXi], \
+\[CapitalOmicron], \[CapitalPi], \[CapitalRho], \[CapitalSigma], \
+\[CapitalTau], \[CapitalUpsilon], \[CapitalPhi], \[CapitalChi], \
+\[CapitalPsi], \[CapitalOmega]};
+       
+       Quiet[Graphics[{PointSize[.02],
+          Point /@ li
+          }, PlotRange -> abs@li, Frame -> True]]) & /@ 
+     Range[Floor[\[Zeta] Log@\[Zeta]]]}];
+
+Manipulate[
+ Show[plots[[var]], Frame -> True], {var, 1, Length@plots, 1, 
+  AnimationRate -> 10, Appearance -> "Open"}]
