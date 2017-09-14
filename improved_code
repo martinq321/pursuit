@@ -1,0 +1,49 @@
+pursuit[k_, n_, 
+   scale_] := (midpt[pc_, pd_] := (Tr /@ Thread@{pc, pd})/2;
+   newpt[pa_, pc_, pd_] := Module[{pb, pnew, xnew, ynew, pab},
+     pb = midpt[pc, pd];
+     pab = {pb[[1]] - pa[[1]], pb[[2]] - pa[[2]]};
+     xnew = 
+      If[pab[[1]] == 0, pa[[1]], 
+       Sign[pab[[1]]] 1/
+          Sqrt[1 + (pa[[2]] - pb[[2]])^2/(pa[[1]] - pb[[1]])^2] + 
+        pa[[1]]];
+     ynew = 
+      If[pab[[1]] == 0, pa[[2]] + Sign[pab[[2]]] 1, 
+       pa[[2]] + (xnew - pa[[1]]) #[[2]]/#[[1]] &@pab];
+     pnew = 
+      If[EuclideanDistance[pa, pb] < 
+        EuclideanDistance[pa, {xnew, ynew}], pb, {xnew, ynew}]];
+   t3[li_] := 
+    Take[#, 3] &@RotateLeft[li, #] & /@ Range[-1, Length@li - 2];
+   abs[p_] := Module[{a, b, c, d, e, f, g},
+     a = {Min@#, Max@#} &@li[[p, 1]][[All, 1]];
+     b = {Min@#, Max@#} &@li[[p, 1]][[All, 2]];
+     c = Abs[Differences@a];
+     d = Abs[Differences@b];
+     e = Max@{c, d}/2; f = 1; g = f*e;
+     {{# - g, # + g} &@Mean@a, {# - g, # + g} &@Mean@b}];
+   list = RandomSample[(scale)*CirclePoints[k], k];
+   li = Thread[{Quiet[
+       FoldList[
+        Chop /@ N /@ newpt[#[[1]], #[[2]], #[[3]]] & /@ t3@# &, 
+        N@list, Range@n]]}];
+   ptable = 
+    Table[Graphics[{PointSize[
+        Exp[1/Log[E + k] - 1]/(k/Log[k/2 + E] Log[Log[k + E^E]])], 
+       Point /@ li[[m]][[1]]}, Frame -> True, PlotRange -> abs@m], {m,
+       1, n, 1}];
+   Manipulate[
+    ptable[[t]], {t, 1, n, 1, Appearance -> "Open", 
+     AnimationRate -> k}]);
+pursuit[k_, n_] := pursuit[k, n, 1]; 
+pursuit[k_] := pursuit[k, Floor[Sqrt[k] k], 1];
+(*
+example implementation ~;
+pursuit[100];
+pursuit[#,Floor[Sqrt[#]#],#]&[100];
+pursuit[#,Floor[2Sqrt[#]#],# Log[#]]&[50];
+pursuit[#,Floor[Sqrt[#]#],1]&[200];
+ListAnimate[ptable[[1;;-1;;20]],AnimationRate\[Rule]100];
+(Differences/@abs@#)[[1,1]]&/@Range@Length@ptable//ListLinePlot
+*)
