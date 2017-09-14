@@ -1,0 +1,397 @@
+Clear[a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, \
+v, w, x, y, z, A, B, F, G, H, J, L, M, P, Q, R, S, T, U, V, W, X, Y, \
+Z, \[Alpha], \[Beta], \[Gamma], \[Delta], \[CurlyEpsilon], \[Zeta], \
+\[Eta], \[Theta], \[Iota], \[Kappa], \[Lambda], \[Chi], \[Nu], \[Xi], \
+\[Omicron], \[Rho], \[Sigma], \[Tau], \[Upsilon], \[CurlyPhi], \
+\[Chi], \[Psi], \[Omega], \[CapitalAlpha], \[CapitalBeta], \
+\[CapitalGamma], \[CapitalDelta], \[CapitalEpsilon], \[CapitalZeta], \
+\[CapitalEta], \[CapitalTheta], \[CapitalIota], \[CapitalKappa], \
+\[CapitalLambda], \[CapitalMu], \[CapitalNu], \[CapitalXi], \
+\[CapitalOmicron], \[CapitalPi], \[CapitalRho], \[CapitalSigma], \
+\[CapitalTau], \[CapitalUpsilon], \[CapitalPhi], \[CapitalChi], \
+\[CapitalPsi], \[CapitalOmega], midpt, newpt, scale, plots, li, abs]
+
+midpt[pc_, pd_] := (Tr /@ Thread@{pc, pd})/2;
+newpt[pa_, pc_, pd_] := Module[{pb, pnew, xnew, ynew, pab},
+   pb = midpt[pc, pd];
+   pab = {pb[[1]] - pa[[1]], pb[[2]] - pa[[2]]};
+   xnew = 
+    If[pab[[1]] == 0, pa[[1]], 
+     Sign[pab[[1]]] 1/
+        Sqrt[1 + (pa[[2]] - pb[[2]])^2/(pa[[1]] - pb[[1]])^2] + 
+      pa[[1]]];
+   ynew = 
+    If[pab[[1]] == 0, pa[[2]] + Sign[pab[[2]]] 1, 
+     pa[[2]] + (xnew - pa[[1]]) #[[2]]/#[[1]] &@pab];
+   pnew = 
+    If[EuclideanDistance[pa, pb] < 
+      EuclideanDistance[pa, {xnew, ynew}], pb, {xnew, ynew}]];
+abs[li_] := Module[{a, b, c, d, e, f, g},
+   a = {Min@#, Max@#} &@li[[All, 1]];
+   b = {Min@#, Max@#} &@li[[All, 2]];
+   c = Abs[Differences@a];
+   d = Abs[Differences@b];
+   e = Max@{c, d}/2; f = 1.5; g = f*e;
+   {{# - g, # + g} &@Mean@a, {# - g, # + g} &@Mean@b}];
+
+\[Zeta] = 26; scale = \[Zeta];
+{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, 
+   x, y, z} = scale*N@RandomSample[CirclePoints[\[Zeta]], \[Zeta]];
+
+plots = With[{\[Rho] =(*Hue[#]&/@Table[CDF[NormalDistribution[0,1],
+     x],{x,-#,#,(2#)/25.}]&[2]*)Array[Black &, 26], \[Eta] = 
+     3, \[Theta] = 2, \[Iota] = 4, \[Kappa] = 0}, 
+   Flatten[{Graphics[{PointSize[.02],
+       
+       Nest[Lighter, \[Rho][[1]], \[Eta]], Line[{a, midpt[b, c]}], 
+       Line[{b, c}], Circle[a, 1],
+       Nest[Lighter, \[Rho][[1]], \[Theta]], Point@a,
+       Nest[Lighter, \[Rho][[1]], \[Iota]], Point@midpt[b, c],
+       Nest[Lighter, \[Rho][[1]], \[Kappa]], Point@newpt[a, b, c],
+       
+       Nest[Lighter, \[Rho][[2]], \[Eta]], Line[{b, midpt[d, a]}], 
+       Line[{d, a}], Circle[b, 1],
+       Nest[Lighter, \[Rho][[2]], \[Theta]], Point@b,
+       Nest[Lighter, \[Rho][[2]], \[Iota]], Point@midpt[d, a],
+       Nest[Lighter, \[Rho][[2]], \[Kappa]], Point@newpt[b, d, a],
+       
+       Nest[Lighter, \[Rho][[3]], \[Eta]], Line[{c, midpt[d, e]}], 
+       Line[{d, e}], Circle[c, 1],
+       Nest[Lighter, \[Rho][[3]], \[Theta]], Point@c,
+       Nest[Lighter, \[Rho][[3]], \[Iota]], Point@midpt[d, e],
+       Nest[Lighter, \[Rho][[3]], \[Kappa]], Point@newpt[c, d, e],
+       
+       Nest[Lighter, \[Rho][[4]], \[Eta]], Line[{d, midpt[e, f]}], 
+       Line[{e, f}], Circle[d, 1],
+       Nest[Lighter, \[Rho][[4]], \[Theta]], Point@d,
+       Nest[Lighter, \[Rho][[4]], \[Iota]], Point@midpt[e, f],
+       Nest[Lighter, \[Rho][[4]], \[Kappa]], Point@newpt[d, e, f],
+       
+       Nest[Lighter, \[Rho][[5]], \[Eta]], Line[{e, midpt[f, g]}], 
+       Line[{f, g}], Circle[e, 1],
+       Nest[Lighter, \[Rho][[5]], \[Theta]], Point@e,
+       Nest[Lighter, \[Rho][[5]], \[Iota]], Point@midpt[f, g],
+       Nest[Lighter, \[Rho][[5]], \[Kappa]], Point@newpt[e, f, g],
+       
+       Nest[Lighter, \[Rho][[6]], \[Eta]], Line[{f, midpt[g, h]}], 
+       Line[{g, h}], Circle[f, 1],
+       Nest[Lighter, \[Rho][[6]], \[Theta]], Point@f,
+       Nest[Lighter, \[Rho][[6]], \[Iota]], Point@midpt[g, h],
+       Nest[Lighter, \[Rho][[6]], \[Kappa]], Point@newpt[f, g, h],
+       
+       Nest[Lighter, \[Rho][[7]], \[Eta]], Line[{g, midpt[h, i]}], 
+       Line[{h, i}], Circle[g, 1],
+       Nest[Lighter, \[Rho][[7]], \[Theta]], Point@g,
+       Nest[Lighter, \[Rho][[7]], \[Iota]], Point@midpt[h, i],
+       Nest[Lighter, \[Rho][[7]], \[Kappa]], Point@newpt[g, h, i],
+       
+       Nest[Lighter, \[Rho][[8]], \[Eta]], Line[{h, midpt[i, j]}], 
+       Line[{i, j}], Circle[h, 1],
+       Nest[Lighter, \[Rho][[8]], \[Theta]], Point@h,
+       Nest[Lighter, \[Rho][[8]], \[Iota]], Point@midpt[i, j],
+       Nest[Lighter, \[Rho][[8]], \[Kappa]], Point@newpt[h, i, j],
+       
+       Nest[Lighter, \[Rho][[9]], \[Eta]], Line[{i, midpt[j, k]}], 
+       Line[{j, k}], Circle[i, 1],
+       Nest[Lighter, \[Rho][[9]], \[Theta]], Point@i,
+       Nest[Lighter, \[Rho][[9]], \[Iota]], Point@midpt[j, k],
+       Nest[Lighter, \[Rho][[9]], \[Kappa]], Point@newpt[i, j, k],
+       
+       Nest[Lighter, \[Rho][[10]], \[Eta]], Line[{j, midpt[k, l]}], 
+       Line[{k, l}], Circle[j, 1],
+       Nest[Lighter, \[Rho][[10]], \[Theta]], Point@j,
+       Nest[Lighter, \[Rho][[10]], \[Iota]], Point@midpt[k, l],
+       Nest[Lighter, \[Rho][[10]], \[Kappa]], Point@newpt[j, k, l],
+       
+       Nest[Lighter, \[Rho][[11]], \[Eta]], Line[{k, midpt[l, m]}], 
+       Line[{l, m}], Circle[k, 1],
+       Nest[Lighter, \[Rho][[11]], \[Theta]], Point@k,
+       Nest[Lighter, \[Rho][[11]], \[Iota]], Point@midpt[l, m],
+       Nest[Lighter, \[Rho][[11]], \[Kappa]], Point@newpt[k, l, m],
+       
+       Nest[Lighter, \[Rho][[12]], \[Eta]], Line[{l, midpt[m, n]}], 
+       Line[{m, n}], Circle[l, 1],
+       Nest[Lighter, \[Rho][[12]], \[Theta]], Point@l,
+       Nest[Lighter, \[Rho][[12]], \[Iota]], Point@midpt[m, n],
+       Nest[Lighter, \[Rho][[12]], \[Kappa]], Point@newpt[l, m, n],
+       
+       Nest[Lighter, \[Rho][[13]], \[Eta]], Line[{m, midpt[n, o]}], 
+       Line[{n, o}], Circle[m, 1],
+       Nest[Lighter, \[Rho][[13]], \[Theta]], Point@m,
+       Nest[Lighter, \[Rho][[13]], \[Iota]], Point@midpt[n, o],
+       Nest[Lighter, \[Rho][[13]], \[Kappa]], Point@newpt[m, n, o],
+       
+       Nest[Lighter, \[Rho][[14]], \[Eta]], Line[{n, midpt[o, p]}], 
+       Line[{o, p}], Circle[n, 1],
+       Nest[Lighter, \[Rho][[14]], \[Theta]], Point@n,
+       Nest[Lighter, \[Rho][[14]], \[Iota]], Point@midpt[o, p],
+       Nest[Lighter, \[Rho][[14]], \[Kappa]], Point@newpt[n, o, p],
+       
+       Nest[Lighter, \[Rho][[15]], \[Eta]], Line[{o, midpt[p, q]}], 
+       Line[{p, q}], Circle[o, 1],
+       Nest[Lighter, \[Rho][[15]], \[Theta]], Point@o,
+       Nest[Lighter, \[Rho][[15]], \[Iota]], Point@midpt[p, q],
+       Nest[Lighter, \[Rho][[15]], \[Kappa]], Point@newpt[o, p, q],
+       
+       Nest[Lighter, \[Rho][[16]], \[Eta]], Line[{p, midpt[q, r]}], 
+       Line[{q, r}], Circle[p, 1],
+       Nest[Lighter, \[Rho][[16]], \[Theta]], Point@p,
+       Nest[Lighter, \[Rho][[16]], \[Iota]], Point@midpt[q, r],
+       Nest[Lighter, \[Rho][[16]], \[Kappa]], Point@newpt[p, q, r],
+       
+       Nest[Lighter, \[Rho][[17]], \[Eta]], Line[{q, midpt[r, s]}], 
+       Line[{r, s}], Circle[q, 1],
+       Nest[Lighter, \[Rho][[17]], \[Theta]], Point@q,
+       Nest[Lighter, \[Rho][[17]], \[Iota]], Point@midpt[r, s],
+       Nest[Lighter, \[Rho][[17]], \[Kappa]], Point@newpt[q, r, s],
+       
+       Nest[Lighter, \[Rho][[18]], \[Eta]], Line[{r, midpt[s, t]}], 
+       Line[{s, t}], Circle[r, 1],
+       Nest[Lighter, \[Rho][[18]], \[Theta]], Point@r,
+       Nest[Lighter, \[Rho][[18]], \[Iota]], Point@midpt[s, t],
+       Nest[Lighter, \[Rho][[18]], \[Kappa]], Point@newpt[q, r, s],
+       
+       Nest[Lighter, \[Rho][[19]], \[Eta]], Line[{s, midpt[t, u]}], 
+       Line[{t, u}], Circle[s, 1],
+       Nest[Lighter, \[Rho][[19]], \[Theta]], Point@s,
+       Nest[Lighter, \[Rho][[19]], \[Iota]], Point@midpt[t, u],
+       Nest[Lighter, \[Rho][[19]], \[Kappa]], Point@newpt[s, t, u],
+       
+       Nest[Lighter, \[Rho][[20]], \[Eta]], Line[{t, midpt[u, v]}], 
+       Line[{u, v}], Circle[t, 1],
+       Nest[Lighter, \[Rho][[20]], \[Theta]], Point@t,
+       Nest[Lighter, \[Rho][[20]], \[Iota]], Point@midpt[u, v],
+       Nest[Lighter, \[Rho][[20]], \[Kappa]], Point@newpt[t, u, v],
+       
+       Nest[Lighter, \[Rho][[21]], \[Eta]], Line[{u, midpt[v, w]}], 
+       Line[{v, w}], Circle[u, 1],
+       Nest[Lighter, \[Rho][[21]], \[Theta]], Point@u,
+       Nest[Lighter, \[Rho][[21]], \[Iota]], Point@midpt[v, w],
+       Nest[Lighter, \[Rho][[21]], \[Kappa]], Point@newpt[u, v, w],
+       
+       Nest[Lighter, \[Rho][[22]], \[Eta]], Line[{v, midpt[w, x]}], 
+       Line[{w, x}], Circle[v, 1],
+       Nest[Lighter, \[Rho][[22]], \[Theta]], Point@v,
+       Nest[Lighter, \[Rho][[22]], \[Iota]], Point@midpt[w, x],
+       Nest[Lighter, \[Rho][[22]], \[Kappa]], Point@newpt[v, w, x],
+       
+       Nest[Lighter, \[Rho][[23]], \[Eta]], Line[{w, midpt[x, y]}], 
+       Line[{x, y}], Circle[w, 1],
+       Nest[Lighter, \[Rho][[23]], \[Theta]], Point@w,
+       Nest[Lighter, \[Rho][[23]], \[Iota]], Point@midpt[x, y],
+       Nest[Lighter, \[Rho][[23]], \[Kappa]], Point@newpt[w, x, y],
+       
+       Nest[Lighter, \[Rho][[24]], \[Eta]], Line[{x, midpt[y, z]}], 
+       Line[{y, z}], Circle[x, 1],
+       Nest[Lighter, \[Rho][[24]], \[Theta]], Point@x,
+       Nest[Lighter, \[Rho][[24]], \[Iota]], Point@midpt[y, z],
+       Nest[Lighter, \[Rho][[24]], \[Kappa]], Point@newpt[x, y, z],
+       
+       Nest[Lighter, \[Rho][[25]], \[Eta]], Line[{y, midpt[z, a]}], 
+       Line[{z, a}], Circle[y, 1],
+       Nest[Lighter, \[Rho][[25]], \[Theta]], Point@y,
+       Nest[Lighter, \[Rho][[25]], \[Iota]], Point@midpt[z, a],
+       Nest[Lighter, \[Rho][[25]], \[Kappa]], Point@newpt[y, z, a],
+       
+       Nest[Lighter, \[Rho][[26]], \[Eta]], Line[{z, midpt[a, b]}], 
+       Line[{a, b}], Circle[z, 1],
+       Nest[Lighter, \[Rho][[26]], \[Theta]], Point@z,
+       Nest[Lighter, \[Rho][[26]], \[Iota]], Point@midpt[a, b],
+       Nest[Lighter, \[Rho][[26]], \[Kappa]], Point@newpt[z, a, b]
+       
+       }, Frame -> True],
+     
+     ({\[Alpha], \[Beta], \[CapitalAlpha], \[CapitalBeta], \
+\[CapitalGamma], \[CapitalDelta], \[CapitalEpsilon], \[CapitalZeta], \
+\[CapitalEta], \[CapitalTheta], \[CapitalIota], \[CapitalKappa], \
+\[CapitalLambda], \[CapitalMu], \[CapitalNu], \[CapitalXi], \
+\[CapitalOmicron], \[CapitalPi], \[CapitalRho], \[CapitalSigma], \
+\[CapitalTau], \[CapitalUpsilon], \[CapitalPhi], \[CapitalChi], \
+\[CapitalPsi], \[CapitalOmega]} = Chop /@ N /@ Quiet[li = {
+              
+              newpt[a, b, c], newpt[b, c, d], newpt[c, d, e], 
+              newpt[d, e, f], newpt[e, f, g], newpt[f, g, h], 
+              newpt[g, h, i],
+              newpt[h, i, j], newpt[i, j, k], newpt[j, k, l], 
+              newpt[k, l, m], newpt[l, m, n], newpt[m, n, o], 
+              newpt[n, o, p], newpt[o, p, q], newpt[p, q, r], 
+              newpt[q, r, s], newpt[q, r, s], newpt[s, t, u], 
+              newpt[t, u, v], newpt[u, v, w], newpt[v, w, x], 
+              newpt[w, x, y], newpt[x, y, z], newpt[y, z, a], 
+              newpt[z, a, b]
+              
+              }];
+        {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, 
+          u, v, w, x, y, 
+          z} = {\[Alpha], \[Beta], \[CapitalAlpha], \[CapitalBeta], \
+\[CapitalGamma], \[CapitalDelta], \[CapitalEpsilon], \[CapitalZeta], \
+\[CapitalEta], \[CapitalTheta], \[CapitalIota], \[CapitalKappa], \
+\[CapitalLambda], \[CapitalMu], \[CapitalNu], \[CapitalXi], \
+\[CapitalOmicron], \[CapitalPi], \[CapitalRho], \[CapitalSigma], \
+\[CapitalTau], \[CapitalUpsilon], \[CapitalPhi], \[CapitalChi], \
+\[CapitalPsi], \[CapitalOmega]};
+        
+        Quiet[Graphics[{PointSize[.02],
+           
+           Nest[Lighter, \[Rho][[1]], \[Eta]], Line[{a, midpt[b, c]}],
+            Line[{b, c}], Circle[a, 1],
+           Nest[Lighter, \[Rho][[1]], \[Theta]], Point@a,
+           Nest[Lighter, \[Rho][[1]], \[Iota]], Point@midpt[b, c],
+           Nest[Lighter, \[Rho][[1]], \[Kappa]], Point@newpt[a, b, c],
+           
+           Nest[Lighter, \[Rho][[2]], \[Eta]], Line[{b, midpt[d, a]}],
+            Line[{d, a}], Circle[b, 1],
+           Nest[Lighter, \[Rho][[2]], \[Theta]], Point@b,
+           Nest[Lighter, \[Rho][[2]], \[Iota]], Point@midpt[d, a],
+           Nest[Lighter, \[Rho][[2]], \[Kappa]], Point@newpt[b, d, a],
+           
+           Nest[Lighter, \[Rho][[3]], \[Eta]], Line[{c, midpt[d, e]}],
+            Line[{d, e}], Circle[c, 1],
+           Nest[Lighter, \[Rho][[3]], \[Theta]], Point@c,
+           Nest[Lighter, \[Rho][[3]], \[Iota]], Point@midpt[d, e],
+           Nest[Lighter, \[Rho][[3]], \[Kappa]], Point@newpt[c, d, e],
+           
+           Nest[Lighter, \[Rho][[4]], \[Eta]], Line[{d, midpt[e, f]}],
+            Line[{e, f}], Circle[d, 1],
+           Nest[Lighter, \[Rho][[4]], \[Theta]], Point@d,
+           Nest[Lighter, \[Rho][[4]], \[Iota]], Point@midpt[e, f],
+           Nest[Lighter, \[Rho][[4]], \[Kappa]], Point@newpt[d, e, f],
+           
+           Nest[Lighter, \[Rho][[5]], \[Eta]], Line[{e, midpt[f, g]}],
+            Line[{f, g}], Circle[e, 1],
+           Nest[Lighter, \[Rho][[5]], \[Theta]], Point@e,
+           Nest[Lighter, \[Rho][[5]], \[Iota]], Point@midpt[f, g],
+           Nest[Lighter, \[Rho][[5]], \[Kappa]], Point@newpt[e, f, g],
+           
+           Nest[Lighter, \[Rho][[6]], \[Eta]], Line[{f, midpt[g, h]}],
+            Line[{g, h}], Circle[f, 1],
+           Nest[Lighter, \[Rho][[6]], \[Theta]], Point@f,
+           Nest[Lighter, \[Rho][[6]], \[Iota]], Point@midpt[g, h],
+           Nest[Lighter, \[Rho][[6]], \[Kappa]], Point@newpt[f, g, h],
+           
+           Nest[Lighter, \[Rho][[7]], \[Eta]], Line[{g, midpt[h, i]}],
+            Line[{h, i}], Circle[g, 1],
+           Nest[Lighter, \[Rho][[7]], \[Theta]], Point@g,
+           Nest[Lighter, \[Rho][[7]], \[Iota]], Point@midpt[h, i],
+           Nest[Lighter, \[Rho][[7]], \[Kappa]], Point@newpt[g, h, i],
+           
+           Nest[Lighter, \[Rho][[8]], \[Eta]], Line[{h, midpt[i, j]}],
+            Line[{i, j}], Circle[h, 1],
+           Nest[Lighter, \[Rho][[8]], \[Theta]], Point@h,
+           Nest[Lighter, \[Rho][[8]], \[Iota]], Point@midpt[i, j],
+           Nest[Lighter, \[Rho][[8]], \[Kappa]], Point@newpt[h, i, j],
+           
+           Nest[Lighter, \[Rho][[9]], \[Eta]], Line[{i, midpt[j, k]}],
+            Line[{j, k}], Circle[i, 1],
+           Nest[Lighter, \[Rho][[9]], \[Theta]], Point@i,
+           Nest[Lighter, \[Rho][[9]], \[Iota]], Point@midpt[j, k],
+           Nest[Lighter, \[Rho][[9]], \[Kappa]], Point@newpt[i, j, k],
+           
+           Nest[Lighter, \[Rho][[10]], \[Eta]], 
+           Line[{j, midpt[k, l]}], Line[{k, l}], Circle[j, 1],
+           Nest[Lighter, \[Rho][[10]], \[Theta]], Point@j,
+           Nest[Lighter, \[Rho][[10]], \[Iota]], Point@midpt[k, l],
+           Nest[Lighter, \[Rho][[10]], \[Kappa]], Point@newpt[j, k, l],
+           
+           Nest[Lighter, \[Rho][[11]], \[Eta]], 
+           Line[{k, midpt[l, m]}], Line[{l, m}], Circle[k, 1],
+           Nest[Lighter, \[Rho][[11]], \[Theta]], Point@k,
+           Nest[Lighter, \[Rho][[11]], \[Iota]], Point@midpt[l, m],
+           Nest[Lighter, \[Rho][[11]], \[Kappa]], Point@newpt[k, l, m],
+           
+           Nest[Lighter, \[Rho][[12]], \[Eta]], 
+           Line[{l, midpt[m, n]}], Line[{m, n}], Circle[l, 1],
+           Nest[Lighter, \[Rho][[12]], \[Theta]], Point@l,
+           Nest[Lighter, \[Rho][[12]], \[Iota]], Point@midpt[m, n],
+           Nest[Lighter, \[Rho][[12]], \[Kappa]], Point@newpt[l, m, n],
+           
+           Nest[Lighter, \[Rho][[13]], \[Eta]], 
+           Line[{m, midpt[n, o]}], Line[{n, o}], Circle[m, 1],
+           Nest[Lighter, \[Rho][[13]], \[Theta]], Point@m,
+           Nest[Lighter, \[Rho][[13]], \[Iota]], Point@midpt[n, o],
+           Nest[Lighter, \[Rho][[13]], \[Kappa]], Point@newpt[m, n, o],
+           
+           Nest[Lighter, \[Rho][[14]], \[Eta]], 
+           Line[{n, midpt[o, p]}], Line[{o, p}], Circle[n, 1],
+           Nest[Lighter, \[Rho][[14]], \[Theta]], Point@n,
+           Nest[Lighter, \[Rho][[14]], \[Iota]], Point@midpt[o, p],
+           Nest[Lighter, \[Rho][[14]], \[Kappa]], Point@newpt[n, o, p],
+           
+           Nest[Lighter, \[Rho][[15]], \[Eta]], 
+           Line[{o, midpt[p, q]}], Line[{p, q}], Circle[o, 1],
+           Nest[Lighter, \[Rho][[15]], \[Theta]], Point@o,
+           Nest[Lighter, \[Rho][[15]], \[Iota]], Point@midpt[p, q],
+           Nest[Lighter, \[Rho][[15]], \[Kappa]], Point@newpt[o, p, q],
+           
+           Nest[Lighter, \[Rho][[16]], \[Eta]], 
+           Line[{p, midpt[q, r]}], Line[{q, r}], Circle[p, 1],
+           Nest[Lighter, \[Rho][[16]], \[Theta]], Point@p,
+           Nest[Lighter, \[Rho][[16]], \[Iota]], Point@midpt[q, r],
+           Nest[Lighter, \[Rho][[16]], \[Kappa]], Point@newpt[p, q, r],
+           
+           Nest[Lighter, \[Rho][[17]], \[Eta]], 
+           Line[{q, midpt[r, s]}], Line[{r, s}], Circle[q, 1],
+           Nest[Lighter, \[Rho][[17]], \[Theta]], Point@q,
+           Nest[Lighter, \[Rho][[17]], \[Iota]], Point@midpt[r, s],
+           Nest[Lighter, \[Rho][[17]], \[Kappa]], Point@newpt[q, r, s],
+           
+           Nest[Lighter, \[Rho][[18]], \[Eta]], 
+           Line[{r, midpt[s, t]}], Line[{s, t}], Circle[r, 1],
+           Nest[Lighter, \[Rho][[18]], \[Theta]], Point@r,
+           Nest[Lighter, \[Rho][[18]], \[Iota]], Point@midpt[s, t],
+           Nest[Lighter, \[Rho][[18]], \[Kappa]], Point@newpt[q, r, s],
+           
+           Nest[Lighter, \[Rho][[19]], \[Eta]], 
+           Line[{s, midpt[t, u]}], Line[{t, u}], Circle[s, 1],
+           Nest[Lighter, \[Rho][[19]], \[Theta]], Point@s,
+           Nest[Lighter, \[Rho][[19]], \[Iota]], Point@midpt[t, u],
+           Nest[Lighter, \[Rho][[19]], \[Kappa]], Point@newpt[s, t, u],
+           
+           Nest[Lighter, \[Rho][[20]], \[Eta]], 
+           Line[{t, midpt[u, v]}], Line[{u, v}], Circle[t, 1],
+           Nest[Lighter, \[Rho][[20]], \[Theta]], Point@t,
+           Nest[Lighter, \[Rho][[20]], \[Iota]], Point@midpt[u, v],
+           Nest[Lighter, \[Rho][[20]], \[Kappa]], Point@newpt[t, u, v],
+           
+           Nest[Lighter, \[Rho][[21]], \[Eta]], 
+           Line[{u, midpt[v, w]}], Line[{v, w}], Circle[u, 1],
+           Nest[Lighter, \[Rho][[21]], \[Theta]], Point@u,
+           Nest[Lighter, \[Rho][[21]], \[Iota]], Point@midpt[v, w],
+           Nest[Lighter, \[Rho][[21]], \[Kappa]], Point@newpt[u, v, w],
+           
+           Nest[Lighter, \[Rho][[22]], \[Eta]], 
+           Line[{v, midpt[w, x]}], Line[{w, x}], Circle[v, 1],
+           Nest[Lighter, \[Rho][[22]], \[Theta]], Point@v,
+           Nest[Lighter, \[Rho][[22]], \[Iota]], Point@midpt[w, x],
+           Nest[Lighter, \[Rho][[22]], \[Kappa]], Point@newpt[v, w, x],
+           
+           Nest[Lighter, \[Rho][[23]], \[Eta]], 
+           Line[{w, midpt[x, y]}], Line[{x, y}], Circle[w, 1],
+           Nest[Lighter, \[Rho][[23]], \[Theta]], Point@w,
+           Nest[Lighter, \[Rho][[23]], \[Iota]], Point@midpt[x, y],
+           Nest[Lighter, \[Rho][[23]], \[Kappa]], Point@newpt[w, x, y],
+           
+           Nest[Lighter, \[Rho][[24]], \[Eta]], 
+           Line[{x, midpt[y, z]}], Line[{y, z}], Circle[x, 1],
+           Nest[Lighter, \[Rho][[24]], \[Theta]], Point@x,
+           Nest[Lighter, \[Rho][[24]], \[Iota]], Point@midpt[y, z],
+           Nest[Lighter, \[Rho][[24]], \[Kappa]], Point@newpt[x, y, z],
+           
+           Nest[Lighter, \[Rho][[25]], \[Eta]], 
+           Line[{y, midpt[z, a]}], Line[{z, a}], Circle[y, 1],
+           Nest[Lighter, \[Rho][[25]], \[Theta]], Point@y,
+           Nest[Lighter, \[Rho][[25]], \[Iota]], Point@midpt[z, a],
+           Nest[Lighter, \[Rho][[25]], \[Kappa]], Point@newpt[y, z, a],
+           
+           Nest[Lighter, \[Rho][[26]], \[Eta]], 
+           Line[{z, midpt[a, b]}], Line[{a, b}], Circle[z, 1],
+           Nest[Lighter, \[Rho][[26]], \[Theta]], Point@z,
+           Nest[Lighter, \[Rho][[26]], \[Iota]], Point@midpt[a, b],
+           Nest[Lighter, \[Rho][[26]], \[Kappa]], Point@newpt[z, a, b]
+           
+           }, PlotRange -> abs@li, Frame -> True]]) & /@ 
+      Range[Floor[2 \[Zeta]]]}]];
+
+Manipulate[
+ Show[plots[[var]], Frame -> True], {var, 1, Length@plots, 1, 
+  AnimationRate -> 10, Appearance -> "Open"}]
