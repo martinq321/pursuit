@@ -21,7 +21,7 @@ pursuit[k_, n_,
      b = {Min@#, Max@#} &@li[[p, 1]][[All, 2]];
      c = Abs[Differences@a];
      d = Abs[Differences@b];
-     e = Max@{c, d}/2; f = 1; g = f*e;
+     e = Max@{c, d}/2; f = 1.1; g = f*e;
      {{# - g, # + g} &@Mean@a, {# - g, # + g} &@Mean@b}];
    list = RandomSample[(scale)*CirclePoints[k], k];
    li = Thread[{Quiet[
