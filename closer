@@ -36,7 +36,7 @@ newPursuit[k_, n_, scale_] :=
    Manipulate[
     plots[[m]], {m, 1, n, 1, Appearance -> "Open", 
      AnimationRate -> k}]];
-newPursuit[k_, n_] := newPursuit[k, n, 1];
+newPursuit[k_, n_] := newPursuit[k, n, k];
 newPursuit[k_] := newPursuit[k, k Sqrt[k]];
 
 (*eg newPursuit[100]*)
