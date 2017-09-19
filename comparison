@@ -1,0 +1,39 @@
+n = 5 Pi; startpt = {0, 2}; incr = .1;
+pursuit[{x0_, y0_}, time1_] := Module[{}, X[t_] = t; Y[t_] = Sin[t];
+   nd = NDSolve[{Thread[{x'[t], y'[t]} == {X[t] - x[t], Y[t] - y[t]}/
+         Sqrt[(X[t] - x[t])^2 + (Y[t] - y[t])^2]], x[0] == x0, 
+      y[0] == y0}, {x, y}, {t, 0, time1}];
+   Table[Evaluate[{x[t], y[t]} /. nd[[1]]], {t, 0, time1}]];
+pursuit[startpt, n] ;
+newptRadius[pa_, pb_, time_] := 
+  Module[{pnew, xnew, ynew, pab, radius, dist},
+   dist = EuclideanDistance[pa, pb];
+   radius = If[dist >= incr, incr, dist];
+   pab = {pb[[1]] - pa[[1]], pb[[2]] - pa[[2]]};
+   xnew = 
+    If[pab[[1]] == 0, pa[[1]], 
+     Sign[pab[[1]]] radius/
+        Sqrt[1 + (pa[[2]] - pb[[2]])^2/(pa[[1]] - pb[[1]])^2] + 
+      pa[[1]]];
+   ynew = 
+    If[pab[[1]] == 0, pa[[2]] + Sign[pab[[2]]] radius, 
+     pa[[2]] + (xnew - pa[[1]]) #[[2]]/#[[1]] &@pab];
+   pnew = {xnew, ynew}];
+tableB = Table[{X@m, Y[m]}, {m, 0, n, incr}];
+tableA = FoldList[newptRadius[#, tableB[[#2]], #2] &, startpt, 
+   Range[Length@tableB]];
+tableC = Table[{x[t], y[t]} /. nd[[1]], {t, 0, n, incr}];
+li = Flatten[{tableA, tableB, tableC}, 
+  1]; pr = {{Min@#, Max@#} &@li[[All, 1]], {Min@#, Max@#} &@
+   li[[All, 2]]};
+Manipulate[
+ Graphics[{PointSize[.02], Blue, 
+   Line /@ Thread@{Most@#, Rest@#} &@Take[tableA, m], 
+   Point@tableA[[m]], Black, 
+   Line /@ Thread@{Most@#, Rest@#} &@Take[tableB, m], 
+   Point@tableB[[m]], Red, 
+   Line /@ Thread@{Most@#, Rest@#} &@Take[tableC, m], 
+   Point@tableC[[m]]}, PlotRange -> pr, Frame -> True, 
+  AspectRatio -> .5/GoldenRatio] ,
+ {m, 1, Length@tableA - 1, 1, Appearance -> "Open", 
+  AnimationRate -> 10}, ControlPlacement -> Top]
