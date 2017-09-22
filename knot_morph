@@ -1,11 +1,24 @@
-fun = KnotData[{8, 21}, "SpaceCurve"];
-par = ParametricPlot3D[fun[t], {t, 0, 2 Pi}, Axes -> False, 
-   Boxed -> False, ViewPoint -> Top, ImageSize -> Medium, 
-   PlotStyle -> {Black, Thickness[0.001]}];
-knotCoords = FullForm[par][[1, 1, 1, 3, 1, 4, 1]];
-circleCoords = {#[[1]], #[[2]], 0} & /@ Flatten[{#, {#[[1]]}}, 1] &@
-   CirclePoints[Length@knotCoords - 1];
-anim = Thread[(Thread /@ ({Subdivide[#[[1]], #[[2]], 100] & /@ 
-        Thread@{knotCoords, N@circleCoords}}))];
-ListAnimate[ Graphics3D[Line[anim[[#]]], Boxed -> False] & /@ Range@Length@anim, 
- ControlPlacement -> Top, AnimationRate -> 20]
+knotMorph[knotdata_] := 
+  Module[{}, fun = KnotData[knotdata, "SpaceCurve"];
+   par = ParametricPlot3D[fun[t], {t, 0, 2 Pi}, Axes -> False, 
+     Boxed -> False, ViewPoint -> Top, ImageSize -> Medium, 
+     PlotStyle -> {Black, Thickness[0.001]}];
+   knotCoords = FullForm[par][[1, 1, 1, 3, 1, 4, 1]];
+   circleCoords = {#[[1]], #[[2]], 0} & /@ 
+       Flatten[{#, {#[[1]]}}, 1] &@CirclePoints[Length@knotCoords - 1];
+   anim = 
+    Thread[(Thread /@ ({Subdivide[#[[1]], #[[2]], 100] & /@ 
+          Thread@{knotCoords, N@circleCoords}}))];
+   ListAnimate[
+    Graphics3D[Line[anim[[#]]], Boxed -> False] & /@ 
+     Range@Length@anim, ControlPlacement -> Top, 
+    AnimationRate -> 20]];
+    
+    (*
+    
+    example implementation;
+    
+    knotMorph[{8, 21}]
+    knotMorph["Trefoil"]
+    
+    *)
