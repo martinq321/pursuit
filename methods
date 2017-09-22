@@ -1,0 +1,80 @@
+pointPursuit[k_, n_, scale_, frame_, point_, methodPart_] := Module[{},
+   li = N@RandomSample[CirclePoints[k], k];
+   midpt[pc_, pd_] := (Tr /@ Thread@{pc, pd})/2;
+   npm[pa_, pc_, pd_] := 
+    Module[{pnew, xnew, ynew, pab, radius, pb, dist}, 
+     pb = midpt[pc, pd];
+     incr = 1; dist = EuclideanDistance[pa, pb];
+     radius = If[dist > incr, incr, dist];
+     pab = {pb[[1]] - pa[[1]], pb[[2]] - pa[[2]]};
+     xnew = 
+      If[pab[[1]] == 0, pa[[1]], 
+       Sign[pab[[1]]] radius/
+          Sqrt[1 + (pa[[2]] - pb[[2]])^2/(pa[[1]] - pb[[1]])^2] + 
+        pa[[1]]];
+     ynew = 
+      If[pab[[1]] == 0, pa[[2]] + Sign[pab[[2]]] radius, 
+       pa[[2]] + (xnew - pa[[1]]) #[[2]]/#[[1]] &@pab];
+     pnew = {xnew, ynew}];
+   abs[li_, p_] := 
+    Module[{a, b, c, d, e, f, g}, 
+     a = {Min@#, Max@#} &@li[[p]][[All, 1]];
+     b = {Min@#, Max@#} &@li[[p]][[All, 2]];
+     c = Abs[Differences@a];
+     d = Abs[Differences@b];
+     e = Max@{c, d}/2; f = 1.1; g = f*e;
+     {{# - g, # + g} &@Mean@a, {# - g, # + g} &@Mean@b}];
+   func[l_] := 
+    With[{li4 = 
+       Flatten /@ (Thread[{l, 
+           Partition[
+            RandomSample[Flatten[Thread@Array[l &, 2], 1], 
+             2*Length@l], 2]}])}, {Tr[
+        Length@DeleteDuplicates[#] & /@ li4] == 3*Length@l, li4}];
+   sel[l1_List, l2_List] := Part[l1, #] & /@ l2;
+   fold[l1_List, l2_List] := npm[##] & @@@ sel[l1, l2];
+   method[p_] := {
+     Partition[Range@p, 3, 1, 1],
+     First[
+       Select[func[Range@p] & /@ 
+         Range@Floor[p^2], #[[1]] == True &]][[2]],
+     Flatten /@ 
+      Thread[{Range@p, 
+        RandomSample[Complement[Range@p, {#}], 2] & /@ Range@p}]
+     }; methodList = method[k];
+   fl = Chop /@ 
+     N /@ FoldList[fold[#, methodList[[methodPart]]] &, li, Range@n];
+   plots = 
+    Table[Graphics[{PointSize[
+        Exp[1/Log[E + k] - 1]/(k/Log[k/2 + E] Log[Log[k + E^E]])], 
+       If[point > 0, Point /@ fl[[m]], 
+        Line /@ Thread@{Most@#, Rest@#} &@Flatten[{#, {#[[1]]}}, 1] &@
+         fl[[m]]]}, PlotRange -> abs[fl, m], Frame -> frame], {m, 1, 
+      n, 1}];
+   Manipulate[
+    plots[[m]], {m, 1, n - 2, 1, Appearance -> "Open", 
+     AnimationRate -> Floor[Log@k*Sqrt@k/2]}, 
+    ControlPlacement -> Top]];
+pointPursuit[k_, n_, point_, methodPart_] := 
+  pointPursuit[k, n, 1, False, point, methodPart];
+pointPursuit[k_, n_, methodPart_] := 
+  pointPursuit[k, n, 1, False, 1, methodPart];
+pointPursuit[k_, methodPart_] := 
+  pointPursuit[k, k, 1, False, 1, methodPart];
+pointPursuit[k_] := pointPursuit[k, k , 1, False, 1, 1];
+
+(*
+
+example implementations;
+
+pointPursuit[#, 1] &[100]
+pointPursuit[#, 2] &[100]
+pointPursuit[#, 3] &[100]
+
+pointPursuit[#, # Sqrt[#], 1, 1] &[100]
+pointPursuit[#, # Sqrt[#], 0, 1] &[100]
+
+k = 200; n = Floor[k Sqrt[k]]; m = Floor[Log[k]]; pointPursuit[k, n, 0, 1];
+ListAnimate[Drop[plots[[Floor[m # Log[#]]]] & /@ Range@Floor[# /ProductLog[#]/m &@n], Floor[Sqrt[k]]], AnimationRate -> 10]
+
+*)
