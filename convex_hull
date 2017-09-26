@@ -1,0 +1,77 @@
+pointP[k_, n_, scale_, frame_, point_, methodPart_] := Module[{},
+   li = N[RandomSample[CirclePoints[k], k]];
+   midpt[pc_, pd_] := (Tr /@ Thread@{pc, pd})/2;
+   npm[pa_, pc_, pd_] := 
+    Module[{pnew, xnew, ynew, pab, radius, pb, dist}, 
+     pb = midpt[pc, pd];
+     incr = 1; dist = EuclideanDistance[pa, pb];
+     radius = If[dist > incr, incr, dist];
+     pab = {pb[[1]] - pa[[1]], pb[[2]] - pa[[2]]};
+     xnew = 
+      If[pab[[1]] == 0, pa[[1]], 
+       Sign[pab[[1]]] radius/
+          Sqrt[1 + (pa[[2]] - pb[[2]])^2/(pa[[1]] - pb[[1]])^2] + 
+        pa[[1]]];
+     ynew = 
+      If[pab[[1]] == 0, pa[[2]] + Sign[pab[[2]]] radius, 
+       pa[[2]] + (xnew - pa[[1]]) #[[2]]/#[[1]] &@pab];
+     pnew = {xnew, ynew}];
+   abs[li_, p_] := 
+    Module[{a, b, c, d, e, f, g}, 
+     a = {Min@#, Max@#} &@li[[p]][[All, 1]];
+     b = {Min@#, Max@#} &@li[[p]][[All, 2]];
+     c = Abs[Differences@a];
+     d = Abs[Differences@b];
+     e = Max@{c, d}/2; f = 1.1; g = f*e;
+     {{# - g, # + g} &@Mean@a, {# - g, # + g} &@Mean@b}];
+   pickPair[sp_, val_] := 
+    With[{pair = 
+       RandomSample[
+        Rule @@ Through@{Values, Keys}@Counts@DeleteCases[val]@sp, 
+        2]}, {Flatten@{val, pair}, 
+      Delete[sp, FirstPosition[#]@sp & /@ pair]}];
+   genSample[list_] := 
+    Quiet@Check[
+      FoldPairList[pickPair, Flatten[Thread@Array[list &, 2], 1], 
+       list], "restart";
+      genSample[list]];
+   sel[l1_List, l2_List] := Part[l1, #] & /@ l2;
+   fold[l1_List, l2_List] := npm[##] & @@@ sel[l1, l2];
+   method[p_] := {
+     Partition[Range@p, 3, 1, 1],
+     genSample@Range@p,
+     Flatten /@ 
+      Thread[{Range@p, 
+        RandomSample[Complement[Range@p, {#}], 2] & /@ Range@p}]
+     }; methodList = method[k];
+   fl = FoldList[fold[#, methodList[[methodPart]]] &, li, Range@n];
+   plots = 
+    Table[Graphics[{PointSize[
+        Exp[1/Log[E + k] - 1]/(k/Log[k/2 + E] Log[Log[k + E^E]])], 
+       If[point > 0, Point /@ fl[[m]], 
+        Line /@ Thread@{Most@#, Rest@#} &@Flatten[{#, {#[[1]]}}, 1] &@
+         fl[[m]]]}, PlotRange -> abs[fl, m], Frame -> frame], {m, 1, 
+      n, 1}];
+   Manipulate[
+    plots[[m]], {m, 1, n - 2, 1, Appearance -> "Open", 
+     AnimationRate -> Floor[Log@k*Sqrt@k/2]}, 
+    ControlPlacement -> Top]];
+pointP[k_] := pointP[k, Floor[k^2/Log[k]], 1, 0, 0, 1];
+shoelace[pts_List] := 
+  Abs[Total[
+       Times @@@ Thread[{#[[All, 1]], RotateLeft[#[[All, 2]]]}]]]/2 &[
+   pts];
+pointPcHull[kp_] := 
+  Module[{}, pointP[kp]; 
+   k = Ceiling@N[Exp[-ProductLog[-1, -2/Length@plots]/2]]; 
+   pointsplts = With[{pts = fl[[#]]},
+       Show[
+        HighlightMesh[ConvexHullMesh[pts], Style[2, Opacity[0]], 
+         BaseStyle -> {EdgeForm[Red]}], 
+        Graphics[{Line[
+           Thread@{Most@#, Rest@#} &@Flatten[{#, {#[[1]]}}, 1] &@
+            fl[[#]]]}]]] & /@ 
+     Floor@N@Table[x^2/Log[x], {x, E^(1/2), k}];
+   ListAnimate[pointsplts, ControlPlacement -> Top]];
+   
+   (*pointPcHull[200]*)
